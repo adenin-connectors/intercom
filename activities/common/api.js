@@ -51,7 +51,7 @@ api.convertResponse = function (response) {
   for (let i = 0; i < admins.length; i++) {
     let raw = admins[i];
     if (raw.type == "admin") {
-      let item = { id: raw.id, title: raw.name, description: raw.type, link: raw.htmlLink, raw: raw }
+      let item = { id: raw.id, title: raw.name, description: raw.type, link: `https://app.intercom.io/`, raw: raw }
       items.push(item);
     }
   }
