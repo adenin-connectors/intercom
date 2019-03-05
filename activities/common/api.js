@@ -10,7 +10,7 @@ function api(path, opts) {
   if (typeof path !== 'string') {
     return Promise.reject(new TypeError(`Expected \`path\` to be a string, got ${typeof path}`));
   }
-  
+
   opts = Object.assign({
     json: true,
     token: _activity.Context.connector.token,
@@ -30,7 +30,6 @@ function api(path, opts) {
     opts.headers.Authorization = `Bearer ${opts.token}`;
   }
 
-
   const url = /^http(s)\:\/\/?/.test(path) && opts.endpoint ? path : opts.endpoint + path;
 
   if (opts.stream) {
@@ -38,26 +37,10 @@ function api(path, opts) {
   }
 
   return got(url, opts).catch(err => {
-
     throw err;
   });
 }
-// convert response from /issues endpoint to 
-api.convertResponse = function (response) {
-  let items = [];
-  let admins = response.body.admins;
 
-  // iterate through each issue and extract id, title, etc. into a new array
-  for (let i = 0; i < admins.length; i++) {
-    let raw = admins[i];
-    if (raw.type == "admin") {
-      let item = { id: raw.id, title: raw.name, description: raw.type, link: `https://app.intercom.io/`, raw: raw }
-      items.push(item);
-    }
-  }
-
-  return { items: items };
-}
 const helpers = [
   'get',
   'post',
@@ -74,19 +57,12 @@ api.stream = (url, opts) => apigot(url, Object.assign({}, opts, {
 
 api.initialize = function (activity) {
   _activity = activity;
-}
+};
 
 for (const x of helpers) {
   const method = x.toUpperCase();
   api[x] = (url, opts) => api(url, Object.assign({}, opts, { method }));
   api.stream[x] = (url, opts) => api.stream(url, Object.assign({}, opts, { method }));
 }
-api.getAdmins = function () {
-  var now = new Date();
-  now = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 24, 0, 0, 0);
 
-  let path = '/admins' + "?timeMax=" + now.toISOString();
-
-  return api(path);
-}
 module.exports = api;
