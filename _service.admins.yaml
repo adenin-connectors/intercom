@@ -1,2 +1,8 @@
+ServiceName: 'admins'
 InterfaceName: items
 Description: List Of Admins
+APIDoc: ''
+Interfaces: 'search,pagination'
+RequiredScopes: ''
+AdditionalParameters:
+Method: ''

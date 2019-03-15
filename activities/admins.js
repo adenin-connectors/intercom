@@ -7,13 +7,29 @@ module.exports = async function (activity) {
 
   try {
     api.initialize(activity);
-    const response = await api('/admins');
+
+    let pagination = cfActivity.pagination(activity);
+    let url = '';
+    if (pagination.nextpage) {
+      url = pagination.nextpage;
+    } else {
+      url = '/admins';
+    }
+
+    const response = await api(url);
 
     if (!cfActivity.isResponseOk(activity, response)) {
       return;
     }
 
     activity.Response.Data = convertResponse(response);
+    if (response.body.pages) {
+      if (response.body.pages.next) {
+        //if no more pages next object is not defined
+        //link to next page - its not offset token
+        activity.Response.Data._nextpage = response.body.pages.next;
+      }
+    }
   } catch (error) {
     cfActivity.handleError(activity, error);
   }
