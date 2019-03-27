@@ -1,14 +1,9 @@
 'use strict';
-
-const cfActivity = require('@adenin/cf-activity');
 const api = require('./common/api');
 
 module.exports = async function (activity) {
-
   try {
-    api.initialize(activity);
-
-    let pagination = cfActivity.pagination(activity);
+    let pagination = Activity.pagination();
     let url = '';
     if (pagination.nextpage) {
       url = pagination.nextpage;
@@ -18,9 +13,7 @@ module.exports = async function (activity) {
 
     const response = await api(url);
 
-    if (!cfActivity.isResponseOk(activity, response)) {
-      return;
-    }
+    if (Activity.isErrorResponse(response)) return;
 
     activity.Response.Data = convertResponse(response);
     if (response.body.pages) {
@@ -31,7 +24,7 @@ module.exports = async function (activity) {
       }
     }
   } catch (error) {
-    cfActivity.handleError(activity, error);
+    Activity.handleError(error);
   }
 };
 
